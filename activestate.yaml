@@ -1,0 +1,6 @@
+project: https://platform.activestate.com/autarch-personal/local-covid-tracker?commitID=bc357bda-6cf6-46a2-bb05-14001428486e
+
+languages:
+  - name: perl
+    version: 5.32
+private: false

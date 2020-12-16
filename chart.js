@@ -55,7 +55,7 @@ function makeChart() {
                 .append("path")
                 .attr("fill", "none")
                 .attr("stroke", d => color(d.key))
-                .attr("stroke-width", 3)
+                .attr("stroke-width", 1)
                 .attr("d", function(d) {
                     return d3.line()
                         .curve(d3.curveBasis)
@@ -77,7 +77,7 @@ function makeChart() {
                 .append("path")
                 .attr("fill", "none")
                 .attr("stroke", d => sdaColor(d.key))
-                .attr("stroke-width", 1)
+                .attr("stroke-width", 3)
                 .attr("d", function(d) {
                     return d3.line()
                         .curve(d3.curveBasis)

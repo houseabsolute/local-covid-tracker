@@ -3,6 +3,9 @@ name: Update data
 on:
   schedule:
     - cron: '0 8 * * *'
+  push:
+    branches:
+      - '*'
 
 jobs:
   update:
@@ -36,11 +39,15 @@ jobs:
         run: |
           set -e
           set -x
-          cpm install
-      - name: Generate summary
+          ./bin/cpm install
+      - name: Generate data
         run: PERL5LIB=$PERL5LIB:$(pwd)/local/lib/perl5 ./report.pl
-      - name: Publish summary
+      - name: Publish data
         uses: actions/upload-artifact@v2
         with:
           name: summary.json
           path: ./summary.json
+      - name: Trigger Render deploy
+        env:
+          RENDER_WEBHOOK_URL: ${{ secrets.RENDER_WEBHOOK_URL }}
+        run: wget "$RENDER_WEBHOOK_URL"

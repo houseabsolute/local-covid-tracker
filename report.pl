@@ -148,6 +148,8 @@ sub run ($self) {
     }
 
     path('summary.json')->spew_raw( encode_json( \@summary ) );
+
+    return 0;
 }
 
 sub _data_for_date ( $self, $dt ) {

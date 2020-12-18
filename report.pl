@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use v5.30;
+use v5.20;
 use autodie qw( :all );
 use experimental qw( signatures );
 use feature qw( postderef );

@@ -1,4 +1,4 @@
-requires 'perl', '5.030000';
+requires 'perl', '5.020000';
 
 requires 'autodie';
 requires 'DateTime';

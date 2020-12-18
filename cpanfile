@@ -16,4 +16,3 @@ requires 'URI::FromHash';
 requires 'Moose';
 requires 'MooseX::Getopt::Dashes';
 
-requires 'App::HTTPThis';

@@ -1,0 +1,46 @@
+name: Update data
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache perl scripts & libs
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./bin
+            ./local
+          key: perl
+      - name: Cache data files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./data
+          key: data
+      - name: Install cpm
+        run: |
+          set -e
+          set -x
+          if [ ! -x ./bin/cpm ]; then
+              mkdir ./bin && \
+              curl -fsSL https://git.io/cpm > ./bin/cpm && \
+              chmod 0755 ./bin/cpm
+          fi
+      - name: Install prereqs
+        run: |
+          set -e
+          set -x
+          cpm install
+      - name: Generate summary
+        run: PERL5LIB=$PERL5LIB:$(pwd)/local/lib/perl5 ./report.pl
+      - name: Publish summary
+        uses: actions/upload-artifact@v2
+        with:
+          name: summary.json
+          path: ./summary.json

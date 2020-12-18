@@ -148,11 +148,6 @@ sub run ($self) {
     }
 
     path('summary.json')->spew_raw( encode_json( \@summary ) );
-
-    if (fork) {
-        exec('http_this');
-    }
-    exec('xdg-open http://localhost:7007/index.html');
 }
 
 sub _data_for_date ( $self, $dt ) {

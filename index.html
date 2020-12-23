@@ -16,7 +16,14 @@
       are the past 7-day average of daily new cases.
     </p>
 
-    <div id="covid-tracking"></div>
+  </div>
+  <div class="row">
+    <div class="col-9">
+      <div id="covid-tracking"></div>
+    </div>
+    <div class="col-3">
+      <div id="details"></div>
+    </div>
   </div>
 </div>
 
@@ -24,6 +31,22 @@
   h1 {
       padding: 0.5em 0 0.5em 0;
       background-color: #eef;
+  }
+  #details h2 {
+      font-size: 140%;
+      font-weight: 900;
+  }
+  #details table th {
+      padding-right: 1em;
+  }
+  #details table td {
+      padding-right: 1em;
+  }
+  #details table td.diff {
+      text-align: right
+  }
+  #details table td.percent {
+      text-align: right
   }
 </style>
 

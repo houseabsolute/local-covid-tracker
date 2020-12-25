@@ -124,6 +124,8 @@ sub _dir ($name) {
 }
 
 sub run ($self) {
+    STDOUT->autoflush(1);
+
     my $dt  = $self->_start_date->clone;
     my $day_8 = $dt->clone->add( days => 7 );
     my $end = DateTime->today->subtract( days => 1 );

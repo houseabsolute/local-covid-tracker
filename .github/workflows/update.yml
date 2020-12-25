@@ -19,7 +19,10 @@ jobs:
           path: |
             ./bin
             ./local
-          key: perl
+          key: perl-${{ hashFiles('cpanfile') }}
+          restore-keys: |
+            perl-${{ hashFiles('cpanfile') }}
+            perl
       - name: Save date for cache
         run: |
           date +'%Y-%m-%d' > cache-date

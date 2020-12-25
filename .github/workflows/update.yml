@@ -20,12 +20,19 @@ jobs:
             ./bin
             ./local
           key: perl
+      - name: Save date for cache
+        run: |
+          date +'%Y-%m-%d' > cache-date
+          cat cache-date
       - name: Cache data files
         uses: actions/cache@v2
         with:
           path: |
             ./data
-          key: data
+          key: data-${{ hashFiles('cache-date') }}
+          restore-keys: |
+            data-${{ hashFiles('cache-date') }}
+            data-
       - name: Install cpm
         run: |
           set -e

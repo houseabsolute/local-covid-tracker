@@ -22,7 +22,12 @@
       <div id="covid-tracking"></div>
     </div>
     <div class="col-3">
-      <div id="details"></div>
+      <div id="details">Mouse over or tap the chart for more details.</div>
+      <p id="explanation">
+        This table shows details for the date you selected. It also compares
+        that date's 7-day average case rate with the first date for which we
+        have a 7-day average.
+      </p>
     </div>
   </div>
 </div>
@@ -44,6 +49,9 @@
   }
   #details table td.diff {
       text-align: right
+  }
+  #explanation {
+      margin-top: 1em;
   }
 </style>
 

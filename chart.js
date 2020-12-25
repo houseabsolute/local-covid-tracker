@@ -17,22 +17,25 @@ function makeChart() {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.json("summary.json").then((data) => {
-        var tp = d3.utcParse("%Y-%m-%d");
-        var keyF = d3.utcFormat("%Y-%m-%d");
+        var dateParser = d3.utcParse("%Y-%m-%d");
+        var dateFormatter = d3.utcFormat("%Y-%m-%d");
 
         var byDay = {};
         data = data.filter((d) => +d.diff > 0);
         data.forEach((d) => {
-            d.day = tp(d.day);
+            d.day = dateParser(d.day);
             d.sub_province = d.sub_province.replaceAll(/^\*\*|\*\*$/g, "");
-            var key = keyF(d.day);
+
+            if (typeof d.seven_day_average === "undefined") {
+                return;
+            }
+
+            var key = dateFormatter(d.day);
             if (typeof byDay[key] === "undefined") {
                 byDay[key] = {};
             }
             byDay[key][d.sub_province] = d;
         });
-
-        var firstDay = byDay[Object.keys(byDay).sort()[0]];
 
         var x = d3
             .scaleTime()
@@ -150,12 +153,12 @@ function makeChart() {
                     return d;
                 });
 
-                var key = x.invert(mouse[0]);
-                if (key.getHours() > 12) {
-                    key.setDate(key.getDate() + 1);
+                var mouseDate = x.invert(mouse[0]);
+                if (mouseDate.getHours() > 12) {
+                    mouseDate.setDate(mouseDate.getDate() + 1);
                 }
-                key = keyF(new Date(key.toDateString()));
-                var thisDay = byDay[key];
+                mouseDate = dateFormatter(new Date(mouseDate.toDateString()));
+                var thisDay = byDay[mouseDate];
                 // 2020-11-26 is missing data.
                 if (typeof thisDay == "undefined") {
                     return;
@@ -163,23 +166,29 @@ function makeChart() {
 
                 d3.selectAll("#details > *").remove();
                 var details = d3.select("#details");
-                details.append("h2").text(key);
+                details.append("h2").text(mouseDate);
 
                 var table = details.append("table");
                 var head = table.append("tr");
                 head.append("th").text("");
-                head.append("th").text("New cases");
+                head.append("th").text("Avg new cases");
 
+                var firstDay = byDay[Object.keys(byDay).sort()[0]];
                 var firstDate = firstDay[Object.keys(firstDay)[0]].day;
-                head.append("th").text("Change vs " + keyF(firstDate));
+                head.append("th").text("Change vs " + dateFormatter(firstDate));
 
                 var keys = Object.keys(thisDay);
                 keys.sort();
                 keys.forEach((k) => {
                     var tr = table.append("tr");
                     tr.append("td").text(k);
-                    tr.append("td").attr("class", "diff").text(thisDay[k].diff);
-                    var mult = Math.round((thisDay[k].diff / firstDay[k].diff) * 10) / 10;
+                    tr.append("td")
+                        .attr("class", "seven_day_average")
+                        .text(Math.round(thisDay[k].seven_day_average));
+                    var mult =
+                        Math.round(
+                            (thisDay[k].seven_day_average / firstDay[k].seven_day_average) * 10
+                        ) / 10;
                     tr.append("td")
                         .attr("class", "multiply")
                         .text(mult + "x");

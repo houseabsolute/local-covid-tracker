@@ -32,10 +32,10 @@ jobs:
         with:
           path: |
             ./data
-          key: data-${{ hashFiles('cache-date') }}
+          key: data-${{ hashFiles('report.pl') }}-${{ hashFiles('cache-date') }}
           restore-keys: |
-            data-${{ hashFiles('cache-date') }}
-            data-
+            data-${{ hashFiles('report.pl') }}-${{ hashFiles('cache-date') }}
+            data-${{ hashFiles('report.pl') }}-
       - name: Install cpm
         run: |
           set -e

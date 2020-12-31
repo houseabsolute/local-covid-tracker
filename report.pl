@@ -43,17 +43,20 @@ has province => (
 my $State = '**State**';
 
 has sub_provinces => (
-    is            => 'ro',
-    isa           => t( 'ArrayRef', of => t('NonEmptyStr') ),
-    default       => sub { [ 'Anoka', 'Hennepin', 'Ramsey', 'Scott' ] },
-    documentation => 'The sub-province regions you care about. Defaults to Anoka, Hennepin, Ramsey, and Scott.',
+    is      => 'ro',
+    isa     => t( 'ArrayRef', of => t('NonEmptyStr') ),
+    default =>
+        sub { [qw( Anoka Carver Dakota Hennepin Ramsey Scott Wright )] },
+    documentation =>
+        'The sub-province regions you care about. Defaults to Anoka, Carver, Dakota, Hennepin, Ramsey, Scott, and Wright.',
 );
 
 has start_date => (
     is            => 'ro',
     isa           => t('NonEmptyStr'),
     default       => '2020-10-15',
-    documentation => 'Start date for COVID reporting. Defaults to 2020-10-15.',
+    documentation =>
+        'Start date for COVID reporting. Defaults to 2020-10-15.',
 );
 
 has _start_date => (
@@ -126,9 +129,9 @@ sub _dir ($name) {
 sub run ($self) {
     STDOUT->autoflush(1);
 
-    my $dt  = $self->_start_date->clone;
+    my $dt    = $self->_start_date->clone;
     my $day_8 = $dt->clone->add( days => 7 );
-    my $end = DateTime->today->subtract( days => 1 );
+    my $end   = DateTime->today->subtract( days => 1 );
 
     my @summary;
     my $i = 0;
@@ -140,7 +143,8 @@ sub run ($self) {
             if ( $dt >= $day_8 ) {
                 $sp->{seven_day_average}
                     = sum(
-                    $self->_diffs->{$name}->@[ ( $i - 7 ) .. ( $i - 1 ) ] ) / 7;
+                    $self->_diffs->{$name}->@[ ( $i - 7 ) .. ( $i - 1 ) ] )
+                    / 7;
             }
         }
 
@@ -199,7 +203,6 @@ sub _get_json ( $self, $dt ) {
     return decode_json( $resp->decoded_content )->{data}[0];
 }
 
-
 sub _uri_for_date ( $self, $date ) {
     return uri(
         scheme => 'https',
@@ -214,6 +217,18 @@ sub _uri_for_date ( $self, $date ) {
     );
 }
 
+# from https://worldpopulationreview.com/us-counties/states/mn
+my %population = (
+    $State   => 5_700_670,
+    Anoka    => 360_401,
+    Carver   => 106_645,
+    Dakota   => 433_002,
+    Hennepin => 1_273_760,
+    Ramsey   => 551_770,
+    Scott    => 150_835,
+    Wright   => 140_441,
+);
+
 sub _summary_for_day ( $self, $dt, $report ) {
     my @sub_provinces;
     my $state = 0;
@@ -223,9 +238,10 @@ sub _summary_for_day ( $self, $dt, $report ) {
         if ( $self->_sub_provinces_hash->{$name} ) {
             push @sub_provinces,
                 {
-                day    => $dt->ymd,
+                day          => $dt->ymd,
                 sub_province => $name,
-                diff   => $sub->{confirmed_diff},
+                diff         => $sub->{confirmed_diff},
+                population   => $population{$name},
                 };
         }
         else {
@@ -235,9 +251,10 @@ sub _summary_for_day ( $self, $dt, $report ) {
 
     push @sub_provinces,
         {
-        day    => $dt->ymd,
+        day          => $dt->ymd,
         sub_province => $State,
-        diff   => $state,
+        diff         => $state,
+        population   => $population{$State},
         };
 
     return @sub_provinces;

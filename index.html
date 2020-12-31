@@ -5,25 +5,54 @@
 <script src="https://unpkg.com/simple-statistics@7.3.2/dist/simple-statistics.min.js"></script>
 <script src="./chart.js"></script>
 <title>Local COVID Trends</title>
-<body onload="makeChart()">
+<body onload="makeCharts()">
 
 <div class="container">
   <div class="row">
     <h1>Local COVID Trends</h1>
+  </div>
 
-    <p>
-      The thin lines represent daily new cases in each region. The thick lines
-      are the past 7-day average of daily new cases.
-    </p>
+  <div class="row">
+    <div class="col-12">
+      <h2>Seven day average of new cases per 10,000 population</h2>
 
+      <p>
+        Each line shows the seven day average of new cases per 10,000
+        population for the given region.
+      </p>
+    </div>
   </div>
   <div class="row">
     <div class="col-9">
-      <div id="covid-tracking"></div>
+      <div id="by-population"></div>
     </div>
     <div class="col-3">
-      <div id="details">Mouse over or tap the chart for more details.</div>
-      <p id="explanation">
+      <div id="by-population-details" class="details">Mouse over or tap the chart for more details.</div>
+      <p class="explanation">
+        This table shows details for the date you selected. It also compares
+        that date's 7-day average case rate with the first date for which we
+        have a 7-day average.
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <h2>New cases, raw numbers</h2>
+
+      <p>
+        The thin lines represent daily new cases in each region. The thick lines
+        are the past 7-day average of daily new cases.
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-9">
+      <div id="raw"></div>
+    </div>
+    <div class="col-3">
+      <div id="raw-details" class="details">Mouse over or tap the chart for more details.</div>
+      <p class="explanation">
         This table shows details for the date you selected. It also compares
         that date's 7-day average case rate with the first date for which we
         have a 7-day average.
@@ -37,20 +66,20 @@
       padding: 0.5em 0 0.5em 0;
       background-color: #eef;
   }
-  #details h2 {
+  .details h2 {
       font-size: 140%;
       font-weight: 900;
   }
-  #details table th {
+  .details table th {
       padding-right: 1em;
   }
-  #details table td {
+  .details table td {
       padding-right: 1em;
   }
-  #details table td.diff {
+  .details table td.diff {
       text-align: right
   }
-  #explanation {
+  .explanation {
       margin-top: 1em;
   }
 </style>

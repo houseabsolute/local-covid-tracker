@@ -41,3 +41,7 @@ To see the list of accepted CLI options:
 
 If you run it without any options it will fetch stats for some Minnesota
 counties. Unless you're my neighbor this may not be that interesting for you.
+
+I also have a hack in the code to hard code population data for regions I care
+about. If you want to change the province or sub-provinces, you'll need to
+provide your own hard coded data.

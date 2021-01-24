@@ -16,6 +16,7 @@ use Specio::Declare qw( object_isa_type );
 use Specio::Library::Builtins;
 use Specio::Library::Path::Tiny;
 use Specio::Library::String;
+use Specio::Subs qw( Specio::Library::Builtins );
 use URI::FromHash qw( uri );
 
 use Moose;
@@ -170,7 +171,8 @@ sub _data_for_date ( $self, $dt ) {
     say sprintf( "%s: calculating summary data", $dt->ymd )
         or die $!;
 
-    my $report = $self->_get_json($dt);
+    my $report = $self->_get_json($dt)
+        or return;
     my @day    = $self->_summary_for_day( $dt, $report );
     $day_cache_file->spew_raw( encode_json( \@day ) );
 
@@ -180,9 +182,13 @@ sub _data_for_date ( $self, $dt ) {
 sub _get_json ( $self, $dt ) {
     my $raw_cache_file = $self->_raw_cache_dir->child( $dt->ymd . '.json' );
     if ( $raw_cache_file->exists ) {
-        say sprintf( "%s: raw data is in cache", $dt->ymd )
+        say sprintf( "%s: raw data cache file exists", $dt->ymd )
             or die $!;
-        return decode_json( $raw_cache_file->slurp_raw )->{data}[0];
+        my $decoded = decode_json( $raw_cache_file->slurp_raw );
+        return $decoded->{data}[0]
+            if is_HashRef($decoded)
+            && is_ArrayRef( $decoded->{data} )
+            && $decoded->{data}->@*;
     }
 
     say sprintf( "%s: getting raw data from API", $dt->ymd )
@@ -196,11 +202,17 @@ sub _get_json ( $self, $dt ) {
             $resp->decoded_content
         );
     }
+
     sleep 1;
 
-    $raw_cache_file->spew_raw( $resp->decoded_content );
+    my $content = $resp->decoded_content;
+    my $decoded = decode_json($content);
 
-    return decode_json( $resp->decoded_content )->{data}[0];
+    return unless $decoded;
+
+    $raw_cache_file->spew_raw($content);
+
+    return $decoded->{data}[0];
 }
 
 sub _uri_for_date ( $self, $date ) {

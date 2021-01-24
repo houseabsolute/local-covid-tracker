@@ -35,6 +35,12 @@ jobs:
           key: data-${{ hashFiles('report.pl') }}-${{ hashFiles('cache-date') }}-v2
           restore-keys: |
             data-${{ hashFiles('report.pl') }}-${{ hashFiles('cache-date') }}-v2
+      - name: Check bad data
+        run: |
+          sudo apt-get --yes install tree
+          tree data
+          cat data/raw/2021-01-18.json data/raw/2021-01-2*.json
+          exit 1
       - name: Install cpm
         run: |
           set -e

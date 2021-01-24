@@ -10,7 +10,7 @@ ID=$(
         --header "Accept: application/vnd.github.v3+json" \
         -u "autarch:$GITHUB_TOKEN" \
         https://api.github.com/repos/houseabsolute/local-covid-tracker/actions/artifacts | \
-        jq '.artifacts[0].id' \
+        jq '.artifacts[0].id'
 )
 
 URL=$(

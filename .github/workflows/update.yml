@@ -31,6 +31,10 @@ jobs:
           key: raw-data-v1
           restore-keys: |
             raw-data-v1
+      - name: Show latest data
+        run:
+          cat ./data/raw/2021-01-23.json
+          exit 1
       - name: Cache summary data files
         uses: actions/cache@v2
         with:

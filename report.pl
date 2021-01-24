@@ -173,7 +173,7 @@ sub _data_for_date ( $self, $dt ) {
 
     my $report = $self->_get_raw_data($dt)
         or return;
-    my @day    = $self->_summary_for_day( $dt, $report );
+    my @day = $self->_summary_for_day( $dt, $report );
     $day_cache_file->spew_raw( encode_json( \@day ) );
 
     return @day;
@@ -191,7 +191,14 @@ sub _get_raw_data ( $self, $dt ) {
             && $decoded->{data}->@*;
     }
 
-    my $resp = $self->_get_data_from_api($dt);
+    my ( $resp, $uri ) = $self->_get_data_from_api($dt);
+    unless ( $resp->is_success ) {
+        die sprintf(
+            "Get $uri returned a %s\n%s\n", $resp->code,
+            $resp->decoded_content
+        );
+    }
+
     my $content = $resp->decoded_content;
     my $decoded = decode_json($content);
 
@@ -203,6 +210,8 @@ sub _get_raw_data ( $self, $dt ) {
 }
 
 sub _get_data_from_api ( $self, $dt ) {
+    my $uri = $self->_uri_for_date($dt);
+
     my $resp;
     my $x = 0;
     my $ok;
@@ -210,7 +219,6 @@ sub _get_data_from_api ( $self, $dt ) {
         say sprintf( "%s: getting raw data from API", $dt->ymd )
             or die $!;
 
-        my $uri = $self->_uri_for_date($dt);
         $resp = $self->_ua->get($uri);
         if ( $resp->is_success ) {
             $ok = 1;
@@ -230,7 +238,7 @@ sub _get_data_from_api ( $self, $dt ) {
         sleep 1;
     } while ( $x++ < 5 && !$ok );
 
-    return $resp;
+    return ( $resp, $uri );
 }
 
 sub _uri_for_date ( $self, $date ) {

@@ -171,7 +171,7 @@ sub _data_for_date ( $self, $dt ) {
     say sprintf( "%s: calculating summary data", $dt->ymd )
         or die $!;
 
-    my $report = $self->_get_json($dt)
+    my $report = $self->_get_raw_data($dt)
         or return;
     my @day    = $self->_summary_for_day( $dt, $report );
     $day_cache_file->spew_raw( encode_json( \@day ) );
@@ -179,7 +179,7 @@ sub _data_for_date ( $self, $dt ) {
     return @day;
 }
 
-sub _get_json ( $self, $dt ) {
+sub _get_raw_data ( $self, $dt ) {
     my $raw_cache_file = $self->_raw_cache_dir->child( $dt->ymd . '.json' );
     if ( $raw_cache_file->exists ) {
         say sprintf( "%s: raw data cache file exists", $dt->ymd )
@@ -191,20 +191,7 @@ sub _get_json ( $self, $dt ) {
             && $decoded->{data}->@*;
     }
 
-    say sprintf( "%s: getting raw data from API", $dt->ymd )
-        or die $!;
-
-    my $uri  = $self->_uri_for_date($dt);
-    my $resp = $self->_ua->get($uri);
-    unless ( $resp->is_success ) {
-        die sprintf(
-            "Get $uri returned a %s\n%s\n", $resp->code,
-            $resp->decoded_content
-        );
-    }
-
-    sleep 1;
-
+    my $resp = $self->_get_data_from_api($dt);
     my $content = $resp->decoded_content;
     my $decoded = decode_json($content);
 
@@ -213,6 +200,37 @@ sub _get_json ( $self, $dt ) {
     $raw_cache_file->spew_raw($content);
 
     return $decoded->{data}[0];
+}
+
+sub _get_data_from_api ( $self, $dt ) {
+    my $resp;
+    my $x = 0;
+    my $ok;
+    do {
+        say sprintf( "%s: getting raw data from API", $dt->ymd )
+            or die $!;
+
+        my $uri = $self->_uri_for_date($dt);
+        $resp = $self->_ua->get($uri);
+        if ( $resp->is_success ) {
+            $ok = 1;
+        }
+        else {
+            if ( $resp->code == 502 ) {
+                say 'got a 502 from API, retrying';
+            }
+            else {
+                die sprintf(
+                    "Get $uri returned a %s\n%s\n", $resp->code,
+                    $resp->decoded_content
+                );
+            }
+        }
+
+        sleep 1;
+    } while ( $x++ < 5 && !$ok );
+
+    return $resp;
 }
 
 sub _uri_for_date ( $self, $date ) {

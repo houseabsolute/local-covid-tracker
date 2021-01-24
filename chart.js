@@ -174,11 +174,9 @@ function makeOneChart(data, byDay, dateFormatter, id, includeRaw, munger, rounde
         // "this".
         .on("mousemove", function () {
             var mouse = d3.mouse(this);
-            console.log(d3.select(mouseLineID));
             d3.select(mouseLineID).attr("d", () => {
                 var d = "M" + mouse[0] + "," + height;
                 d += " " + mouse[0] + "," + 0;
-                console.log(d);
                 return d;
             });
 

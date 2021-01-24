@@ -23,18 +23,22 @@ jobs:
           restore-keys: |
             perl-${{ hashFiles('cpanfile') }}
             perl
-      - name: Save date for cache
-        run: |
-          date +'%Y-%m-%d' > cache-date
-          cat cache-date
-      - name: Cache data files
+      - name: Cache raw data files
         uses: actions/cache@v2
         with:
           path: |
-            ./data
-          key: data-${{ hashFiles('report.pl') }}-${{ hashFiles('cache-date') }}-v2
+            ./data/raw
+          key: raw-data-v1
           restore-keys: |
-            data-${{ hashFiles('report.pl') }}-${{ hashFiles('cache-date') }}-v2
+            raw-data-v1
+      - name: Cache summary data files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./data/summary
+          key: summary-data-${{ hashFiles('report.pl') }}-v1
+          restore-keys: |
+            summary-data-${{ hashFiles('report.pl') }}-v1
       - name: Install cpm
         run: |
           set -e

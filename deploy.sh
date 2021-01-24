@@ -13,13 +13,17 @@ ID=$(
         jq '.artifacts[0].id' \
 )
 
+URL=$(
 curl \
     --head \
     -u "autarch:$GITHUB_TOKEN" \
     https://api.github.com/repos/houseabsolute/local-covid-tracker/actions/artifacts/$ID/zip | \
     grep -Fi "Location: " | \
-    sed "s/Location: /url=/" | \
-    curl -K - | \
+    sed "s/[Ll]ocation: /url=/"
+)
+
+echo "$URL" | \
+    curl -K -  | \
     zcat > ./deploy/summary.json
 
 cp chart.js index.html ./deploy/

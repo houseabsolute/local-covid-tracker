@@ -26,4 +26,6 @@ echo "$URL" | \
     curl -K -  | \
     zcat > ./deploy/summary.json
 
+jq . ./deploy/summary.json
+
 cp chart.js index.html ./deploy/

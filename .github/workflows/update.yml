@@ -13,16 +13,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Save perl version info
+        run: |
+          mkdir perl-version
+          perl -V > perl-version/perl-v
       - name: Cache perl scripts & libs
         uses: actions/cache@v2
         with:
           path: |
             ./bin
             ./local
-          key: perl-${{ hashFiles('cpanfile') }}
+          key: perl-${{ hashFiles('cpanfile') }}-${{ hashFiles('perl-version/perl-v') }}
           restore-keys: |
-            perl-${{ hashFiles('cpanfile') }}
-            perl
+            perl-${{ hashFiles('cpanfile') }}-${{ hashFiles('perl-version/perl-v') }}
       - name: Cache raw data files
         uses: actions/cache@v2
         with:

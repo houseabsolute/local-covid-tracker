@@ -302,4 +302,3 @@ sub _summary_for_day ( $self, $dt, $report ) {
 package main;
 
 exit Reporter->new_with_options->run;
-

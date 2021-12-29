@@ -72,8 +72,8 @@ has _start_date => (
 sub _build_start_date ($self) {
     my ( $y, $m, $d ) = split /-/, $self->start_date;
     my $dt = DateTime->new( year => $y, month => $m, day => $d );
-    if ( $dt->year != 2020 ) {
-        die sprintf( "Start date is not in 2020: %s\n", $self->start_date );
+    if ( $dt->year < 2020 ) {
+        die sprintf( "Start date is before 2020: %s\n", $self->start_date );
     }
 
     return $dt;
@@ -143,10 +143,13 @@ sub run ($self) {
             my $name = $sp->{sub_province};
             push $self->_diffs->{$name}->@*, $sp->{diff};
             if ( $dt >= $day_8 ) {
+                my @non_zero = grep { $_ != 0 }
+                    $self->_diffs->{$name}->@[ ( $i - 7 ) .. ( $i - 1 ) ];
+                if ( @non_zero == 0 ) {
+                    die "No data for seven day period before $dt";
+                }
                 $sp->{seven_day_average}
-                    = sum(
-                    $self->_diffs->{$name}->@[ ( $i - 7 ) .. ( $i - 1 ) ] )
-                    / 7;
+                    = sum(@non_zero) / scalar(@non_zero);
             }
         }
 

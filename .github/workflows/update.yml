@@ -31,17 +31,17 @@ jobs:
         with:
           path: |
             ./data/raw
-          key: raw-data-v2
+          key: raw-data-v3
           restore-keys: |
-            raw-data-v2
+            raw-data-v3
       - name: Cache summary data files
         uses: actions/cache@v2
         with:
           path: |
             ./data/summary
-          key: summary-data-${{ hashFiles('report.pl') }}-v2
+          key: summary-data-${{ hashFiles('report.pl') }}-v3
           restore-keys: |
-            summary-data-${{ hashFiles('report.pl') }}-v2
+            summary-data-${{ hashFiles('report.pl') }}-v3
       - name: Install cpm
         run: |
           set -e
